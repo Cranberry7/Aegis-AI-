@@ -1,0 +1,17 @@
+export const API_ROUTES = {
+  CHAT: '/chat/',
+  TRAIN: '/train/resources',
+  STREAM: (sessionId: string) => `/stream/?session_id=${sessionId}`,
+  DOCUMENT: '/documents',
+  AUTH: '/auth',
+  LOGIN: '/auth/login',
+  LOGOUT: '/auth/logout',
+  CONVERSATION: '/conversations',
+  SESSIONS: '/sessions',
+  USER: '/users/',
+  DELETE_USER: (id: string) => `/users/${id}`,
+  INVITE: '/auth/invite',
+  ACCOUNT: '/accounts',
+  SUGGESTION: '/suggestion/',
+  DELETE_DOCUMENT: (id: string) => `/train/${id}`,
+};

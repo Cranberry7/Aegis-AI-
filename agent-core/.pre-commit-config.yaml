@@ -1,0 +1,74 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    stages: [commit, push]
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/myint/autoflake
+    rev: v2.3.1
+    stages: [commit, push]
+    hooks:
+      - id: autoflake
+        args:
+          - -r # recursive search
+          - --in-place # replace in place
+          - --remove-unused-variables # remove unused variables
+          - --remove-all-unused-imports # remove unused imports
+  - repo: https://github.com/psf/black
+    rev: 24.10.0
+    stages: [commit, push]
+    hooks:
+      - id: black
+        language_version: python3.12
+  - repo: https://github.com/pycqa/isort
+    rev: 6.0.0
+    stages: [commit, push]
+    hooks:
+      - id: isort
+        name: isort (python)
+        additional_dependencies:
+          - toml
+        args:
+          - --filter-files
+          - --profile=black
+        files: \.py$
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.0.0
+    stages: [commit, push]
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args:
+          [
+            fix,
+            feat,
+            docs,
+            style,
+            refactor,
+            perf,
+            test,
+            build,
+            ci,
+            chore,
+            revert,
+            merge,
+          ]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.3
+    stages: [commit, push]
+    hooks:
+      - id: ruff
+        args: [--fix]
+        name: ruff
+      - id: ruff-format
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: "v1.14.1"
+    stages: [commit, push]
+    hooks:
+      - id: mypy
+        args: [--ignore-missing-imports, --explicit-package-bases, --check-untyped-defs]
+        additional_dependencies: [types-PyYAML, types-requests, types-redis]

@@ -1,0 +1,21 @@
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  only:
+    - main
+  before_script:
+    - apt-get -yq update
+    - apt-get -yqq install openssh-client
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PVT_KEY" | base64 -d | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan -H $SSH_HOST -v > ~/.ssh/known_hosts
+  script:
+    - echo "Triggering deployment..."
+    - chmod +x ./scripts/deploy.sh
+    - ./scripts/deploy.sh
+  after_script:
+    - rm -rf ~/.ssh

@@ -1,0 +1,7 @@
+vectordb
+__pycache__
+.venv
+.vscode
+dev
+setup.sh
+.gitignore

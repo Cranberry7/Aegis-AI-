@@ -1,0 +1,16 @@
+services:
+  frontend:
+    container_name: ai-agents-frontend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "4174:4173"
+    env_file:
+      - ./.env
+    networks:
+      - ai_agents_nw
+
+networks:
+  ai_agents_nw:
+    external: true

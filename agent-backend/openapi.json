@@ -1,0 +1,2186 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/ping": {
+      "get": {
+        "operationId": "AppController_ping",
+        "summary": "Health Check",
+        "description": "This endpoint is used to verify if the Agent Backend Service is running and responsive. It can be used by monitoring tools or load balancers for availability checks.",
+        "tags": ["App"],
+        "responses": {
+          "200": {
+            "description": "Successful health check response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "SUCCESS",
+                      "description": "Indicates the result of the health check"
+                    },
+                    "data": {
+                      "type": "string",
+                      "example": "pong!",
+                      "description": "Echo message confirming service response"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-01-01T00:00:00.000Z",
+                      "description": "The server timestamp at the time of response"
+                    }
+                  },
+                  "required": ["status", "data", "timestamp"]
+                },
+                "example": {
+                  "status": "SUCCESS",
+                  "data": "pong!",
+                  "timestamp": "2023-01-01T00:00:00.000Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth": {
+      "get": {
+        "operationId": "AuthController_authenticateUser",
+        "summary": "Authenticate User",
+        "description": "Validates the current session/token and returns user details if authenticated. This endpoint is commonly used to check whether the user is logged in.",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Successful authentication with user details.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "SUCCESS",
+                      "default": "SUCCESS",
+                      "description": "Indicates the result of the request"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Authenticated user information",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "user-id-placeholder"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "user@example.com"
+                        },
+                        "isEmailVerified": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "account": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "account-id-placeholder"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Example Company"
+                            }
+                          }
+                        },
+                        "role": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "example": "role-id-placeholder"
+                            },
+                            "code": {
+                              "type": "string",
+                              "enum": ["superadmin", "admin", "user", "guest"],
+                              "example": "admin",
+                              "description": "Defines the role code of the authenticated user."
+                            },
+                            "value": {
+                              "type": "string",
+                              "enum": ["Admin", "Super Admin", "User", "Guest"],
+                              "example": "Admin",
+                              "description": "Human-readable role name for the authenticated user."
+                            }
+                          }
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "email",
+                        "isEmailVerified",
+                        "account",
+                        "role"
+                      ]
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-01-01T00:00:00.000Z",
+                      "default": "2023-01-01T00:00:00.000Z"
+                    }
+                  },
+                  "required": ["status", "data", "timestamp"]
+                },
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "id": "user-id-placeholder",
+                    "name": "John Doe",
+                    "email": "user@example.com",
+                    "isEmailVerified": true,
+                    "account": {
+                      "id": "account-id-placeholder",
+                      "name": "Example Company"
+                    },
+                    "role": {
+                      "id": "role-id-placeholder",
+                      "code": "admin",
+                      "value": "Admin"
+                    }
+                  },
+                  "timestamp": "2023-01-01T00:00:00.000Z"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed or token is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "FAILURE"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid token or session expired."
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "example": "INVALID_TOKEN"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-01-01T00:00:00.000Z"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/agent-backend/auth"
+                    }
+                  },
+                  "required": ["status", "errorCode", "timestamp", "path"]
+                },
+                "example": {
+                  "status": "FAILURE",
+                  "message": "Invalid token or session expired.",
+                  "errorCode": "INVALID_TOKEN",
+                  "timestamp": "2023-01-01T00:00:00.000Z",
+                  "path": "/agent-backend/auth"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "AuthController_loginUser",
+        "summary": "User Login",
+        "description": "Authenticates a user using their email and password credentials.",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              },
+              "example": {
+                "email": "user@example.com",
+                "password": "yourStrongPassword123"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Returns user profile and authentication status upon successful login.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "data", "timestamp"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "SUCCESS",
+                      "default": "SUCCESS",
+                      "description": "Indicates login success or failure."
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "name",
+                        "email",
+                        "isEmailVerified",
+                        "account",
+                        "role",
+                        "createdAt",
+                        "updatedAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "example": "123e4567-e89b-12d3-a456-426614174000"
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "John Doe"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "example": "user@example.com"
+                        },
+                        "isEmailVerified": {
+                          "type": "boolean",
+                          "example": true
+                        },
+                        "account": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "987f6543-e21a-45bc-94d1-112233445566"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Example Corp"
+                            }
+                          }
+                        },
+                        "role": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "123e4567-e89b-12d3-a456-426614174000"
+                            },
+                            "code": {
+                              "type": "string",
+                              "example": "admin"
+                            },
+                            "value": {
+                              "type": "string",
+                              "example": "Administrator"
+                            }
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-01-01T00:00:00.000Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-01-01T00:00:00.000Z"
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-01-01T00:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Returned when the login request payload is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "status",
+                    "message",
+                    "errorCode",
+                    "timestamp",
+                    "path"
+                  ],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "FAILURE"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Invalid login payload."
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "example": "INVALID_LOGIN_CREDENTIALS"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-01-01T00:00:00.000Z"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/agent-backend/auth/login"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/verify-email": {
+      "get": {
+        "operationId": "AuthController_verifyEmail",
+        "summary": "Verify email address",
+        "description": "Verifies the user's email using the token provided in the query parameter.",
+        "tags": ["Auth"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Email verified successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Response after successful email verification.",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "EMAIL_VERIFIED"
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-07-25T07:38:36.424Z"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "message": "EMAIL_VERIFIED"
+                  },
+                  "timestamp": "2025-07-25T07:38:36.424Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid or expired verification token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Failure response when email verification fails.",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "FAILURE"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "User not found for the provided token"
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "example": "HTTP_ERROR"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-07-25T07:38:36.424Z"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/agent-backend/auth/verify-email?token=..."
+                    }
+                  }
+                },
+                "example": {
+                  "status": "FAILURE",
+                  "message": "User not found for the provided token",
+                  "errorCode": "HTTP_ERROR",
+                  "timestamp": "2025-07-25T07:38:36.424Z",
+                  "path": "/agent-backend/auth/verify-email?token=..."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "summary": "Log out the current user",
+        "description": "This endpoint logs out the currently authenticated user and clears their session/token information.",
+        "tags": ["Auth"],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "User logged out successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard logout response object.",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Indicates the status of the logout request.",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Additional information related to logout operation.",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "description": "Logout confirmation message.",
+                          "example": "SUCCESSFUL_LOGOUT"
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp when the logout occurred.",
+                      "example": "2025-07-25T07:28:27.156Z"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "message": "SUCCESSFUL_LOGOUT"
+                  },
+                  "timestamp": "2025-07-25T07:28:27.156Z"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/invite": {
+      "post": {
+        "operationId": "AuthController_inviteUser",
+        "summary": "Invite a new user",
+        "description": "This endpoint is used to send an invitation to a user by email. It accepts user details and sends a verification email.",
+        "tags": ["Auth"],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InviteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User invited successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Response after sending invitation(s) to user(s).",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Status of the request.",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "array",
+                      "description": "List of user invitation responses.",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email address of the invited user.",
+                            "example": "user@example.com"
+                          },
+                          "status": {
+                            "type": "string",
+                            "description": "Current status of the invitation process.",
+                            "example": "completed"
+                          },
+                          "message": {
+                            "type": "string",
+                            "description": "Additional information about the invitation status.",
+                            "example": "Verification email sent to user."
+                          }
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the response generation.",
+                      "example": "2025-07-25T07:15:53.996Z"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "SUCCESS",
+                  "data": [
+                    {
+                      "email": "user@example.com",
+                      "status": "completed",
+                      "message": "Verification email sent to user."
+                    }
+                  ],
+                  "timestamp": "2025-07-25T07:15:53.996Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Standard failure response structure for invalid inputs.",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Status of the request.",
+                      "example": "FAILURE"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Optional human-readable error message.",
+                      "example": ""
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "description": "Internal error code representing the failure reason.",
+                      "example": "INVALID_INPUT"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the error.",
+                      "example": "2025-07-25T07:25:58.025Z"
+                    },
+                    "path": {
+                      "type": "string",
+                      "description": "Request path that caused the error.",
+                      "example": "/agent-backend/auth/invite"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "FAILURE",
+                  "message": "",
+                  "errorCode": "INVALID_INPUT",
+                  "timestamp": "2025-07-25T07:25:58.025Z",
+                  "path": "/agent-backend/auth/invite"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "UserController_addUser",
+        "summary": "Create a new user",
+        "description": "This endpoint creates a new user in the system with the provided user details.",
+        "tags": ["User"],
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Response returned after successful user creation.",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Status of the operation.",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "Created user data.",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "description": "User ID.",
+                          "example": "123e4567-e89b-12d3-a456-426614174000"
+                        },
+                        "name": {
+                          "type": "string",
+                          "description": "Full name of the user.",
+                          "example": "Jane Doe"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email",
+                          "description": "Email address of the user.",
+                          "example": "user@example.com"
+                        },
+                        "isEmailVerified": {
+                          "type": "boolean",
+                          "description": "Whether the user's email is verified.",
+                          "example": false
+                        },
+                        "account": {
+                          "type": "object",
+                          "description": "Associated account info.",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "123e4567-e89b-12d3-a456-426614174000"
+                            },
+                            "name": {
+                              "type": "string",
+                              "example": "Example Account"
+                            }
+                          }
+                        },
+                        "role": {
+                          "type": "object",
+                          "description": "User role information.",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid",
+                              "example": "123e4567-e89b-12d3-a456-426614174000"
+                            },
+                            "code": {
+                              "type": "string",
+                              "example": "admin"
+                            },
+                            "value": {
+                              "type": "string",
+                              "example": "Admin"
+                            }
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "User creation timestamp.",
+                          "example": "2025-07-25T07:31:42.431Z"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "Last updated timestamp.",
+                          "example": "2025-07-25T07:31:42.431Z"
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Timestamp of the response.",
+                      "example": "2025-07-25T07:31:42.470Z"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "id": "cf55b867-8098-4925-8d23-8052b44bb455",
+                    "name": "Jane Doe",
+                    "email": "user@example.com",
+                    "isEmailVerified": false,
+                    "account": {
+                      "id": "d3a7a16c-2b99-4be6-9b91-8f75a21e9a5d",
+                      "name": "Example Account"
+                    },
+                    "role": {
+                      "id": "8c4bc16b-49b0-4ffa-935a-6238ba025db0",
+                      "code": "admin",
+                      "value": "Admin"
+                    },
+                    "createdAt": "2025-07-25T07:31:42.431Z",
+                    "updatedAt": "2025-07-25T07:31:42.431Z"
+                  },
+                  "timestamp": "2025-07-25T07:31:42.470Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "User creation failed due to invalid input or server-side error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Failure response format.",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "description": "Failure status indicator.",
+                      "example": "FAILURE"
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "Error message for the failure.",
+                      "example": ""
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "description": "Error code for debugging.",
+                      "example": "FAILED_USER_UPSERTION"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Time of the error.",
+                      "example": "2025-07-25T07:48:22.152Z"
+                    },
+                    "path": {
+                      "type": "string",
+                      "description": "Endpoint where the error occurred.",
+                      "example": "/agent-backend/users"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "FAILURE",
+                  "message": "",
+                  "errorCode": "FAILED_USER_UPSERTION",
+                  "timestamp": "2025-07-25T07:48:22.152Z",
+                  "path": "/agent-backend/users"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "UserController_updateUser",
+        "summary": "Update user details",
+        "description": "Updates a user's details based on the request body.",
+        "tags": ["User"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User updated successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "isEmailVerified": {
+                          "type": "boolean"
+                        },
+                        "account": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "role": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "format": "uuid"
+                            },
+                            "code": {
+                              "type": "string"
+                            },
+                            "value": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "example": {
+                    "status": "SUCCESS",
+                    "data": {
+                      "id": "cf55b867-8098-4925-8d23-8052b44bb455",
+                      "name": "Pratik Ghodke",
+                      "email": "pratik.ghodke@sarvaha.com",
+                      "isEmailVerified": false,
+                      "account": {
+                        "id": "d3a7a16c-2b99-4be6-9b91-8f75a21e9a5d",
+                        "name": "Sarvaha Systems"
+                      },
+                      "role": {
+                        "id": "8c4bc16b-49b0-4ffa-935a-6238ba025db0",
+                        "code": "admin",
+                        "value": "Admin"
+                      },
+                      "createdAt": "2025-07-25T07:31:42.431Z",
+                      "updatedAt": "2025-07-25T08:00:39.609Z"
+                    },
+                    "timestamp": "2025-07-25T08:00:39.642Z"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input or incorrect information provided.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "FAILURE"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "INCORRECT_INFORMATION_PROVIDED"
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "example": "INVALID_INPUT"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/agent-backend/users"
+                    }
+                  }
+                },
+                "example": {
+                  "status": "FAILURE",
+                  "message": "INCORRECT_INFORMATION_PROVIDED",
+                  "errorCode": "INVALID_INPUT",
+                  "timestamp": "2025-07-25T08:00:59.680Z",
+                  "path": "/agent-backend/users"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "UserController_getUserByAccount",
+        "summary": "Get users by account",
+        "description": "Fetch a list of users associated with an account.",
+        "tags": ["User"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Users retrieved successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "SUCCESS"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "numberOfRows": {
+                          "type": "integer",
+                          "example": 1
+                        },
+                        "rows": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "example": "123e4567-e89b-12d3-a456-426614174000"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "Jane Doe"
+                              },
+                              "email": {
+                                "type": "string",
+                                "format": "email",
+                                "example": "user@example.com"
+                              },
+                              "password": {
+                                "type": "string",
+                                "description": "Encrypted password (internal use only)",
+                                "example": "encrypted_password_here"
+                              },
+                              "isEmailVerified": {
+                                "type": "boolean",
+                                "example": false
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-07-25T07:31:42.431Z"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-07-25T08:00:39.609Z"
+                              },
+                              "role": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "type": "string",
+                                    "example": "admin"
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-07-25T08:36:31.455Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing required input.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "FAILURE"
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Either id or accountId is required to fetch the user."
+                    },
+                    "errorCode": {
+                      "type": "string",
+                      "example": "MISSING_INPUT"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-07-25T08:38:51.717Z"
+                    },
+                    "path": {
+                      "type": "string",
+                      "example": "/agent-backend/users/"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts": {
+      "post": {
+        "operationId": "AccountController_addOrUpdateAccount",
+        "summary": "Create or update an account",
+        "description": "Creates a new account or updates an existing one based on the input provided.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddOrUpdateAccountDto"
+              },
+              "example": {
+                "id": "e1104336-d582-4779-b75b-64deb53e9f6c",
+                "name": "Example Corp"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account successfully created or updated.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "id": "e1104336-d582-4779-b75b-64deb53e9f6c"
+                  },
+                  "timestamp": "2025-07-25T08:47:11.993Z"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Account creation or update failed.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "",
+                  "errorCode": "FAILED_ACCOUNT_UPSERTION",
+                  "timestamp": "2025-07-25T08:48:22.634Z",
+                  "path": "/agent-backend/accounts"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Account"]
+      }
+    },
+    "/accounts/{id}": {
+      "get": {
+        "operationId": "AccountController_getAccount",
+        "summary": "Get account by ID",
+        "description": "Retrieves the account details for the provided account ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The unique identifier of the account to retrieve.",
+            "schema": {
+              "type": "string",
+              "example": "e1104336-d582-4779-b75b-64deb53e9f6c"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account successfully retrieved.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "id": "e1104336-d582-4779-b75b-64deb53e9f6c",
+                    "name": "Example Organization",
+                    "createdAt": "2025-07-25T08:46:01.485Z",
+                    "updatedAt": "2025-07-25T08:47:11.988Z"
+                  },
+                  "timestamp": "2025-07-25T08:51:35.317Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found for the given ID.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "Account with id - e1104336-d582-4779-b75b-64deb53e9f6c does not exists.",
+                  "errorCode": "FAILED_ACCOUNT_RETRIEVAL",
+                  "timestamp": "2025-07-25T08:52:25.740Z",
+                  "path": "/agent-backend/accounts/e1104336-d582-4779-b75b-64deb53e9f6c"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Account"]
+      }
+    },
+    "/train/resources": {
+      "post": {
+        "operationId": "TrainingController_processInput",
+        "summary": "Process training input",
+        "description": "Submits training input data to be processed by the backend system. This is typically used to trigger ingestion or training logic for new content. Accepts both structured data and files.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TrainingInputDto"
+              }
+            },
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    },
+                    "description": "Files to be used for training input. Accepts multiple files."
+                  },
+                  "data": {
+                    "$ref": "#/components/schemas/TrainingInputDto"
+                  }
+                },
+                "required": ["files"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Training input processed successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "timestamp": "2025-07-25T11:51:24.280Z"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while processing training input.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "INTERNAL_SERVER_ERROR",
+                  "errorCode": "UNKNOWN_ERROR",
+                  "timestamp": "2025-07-25T11:25:08.565Z",
+                  "path": "/agent-backend/train/resources"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Training"]
+      }
+    },
+    "/train/{id}": {
+      "delete": {
+        "operationId": "TrainingController_deleteDocument",
+        "summary": "Delete a training document",
+        "description": "Deletes the training document specified by its unique ID. This action cannot be undone.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the training document to delete.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document deleted successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "timestamp": "2025-07-25T11:59:40.990Z"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "DOCUMENT_NOT_FOUND",
+                  "errorCode": "NOT_FOUND",
+                  "timestamp": "2025-07-25T12:00:00.000Z",
+                  "path": "/agent-backend/train/{id}"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Training"]
+      }
+    },
+    "/documents/{id}": {
+      "put": {
+        "operationId": "DocumentController_updateDocument",
+        "summary": "Update document metadata",
+        "description": "Updates metadata for a given document by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDocumentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document updated successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "fileName": "updated-file-name.ext",
+                    "id": "{documentId}",
+                    "userId": "{userId}",
+                    "accountId": "{accountId}",
+                    "folder": "{folderPath}",
+                    "type": "file",
+                    "status": "{status}",
+                    "createdAt": "2025-07-25T11:45:14.740Z",
+                    "updatedAt": "2025-07-25T12:07:54.792Z"
+                  },
+                  "timestamp": "2025-07-25T12:07:54.802Z"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access. The user does not have permission to update this document.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "FORBIDDEN_ACCESS",
+                  "errorCode": "FORBIDDEN_ACCESS",
+                  "timestamp": "2025-07-25T12:09:06.842Z",
+                  "path": "/agent-backend/documents/{documentId}"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Document"]
+      }
+    },
+    "/documents": {
+      "get": {
+        "summary": "Retrieve all documents",
+        "description": "Retrieve all documents",
+        "operationId": "DocumentController_getAllDocuments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Retrieve a list of all documents uploaded or registered in the system.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "numberOfRows": 6,
+                    "rows": [
+                      {
+                        "fileName": "swagger.yaml",
+                        "id": "<documentId1>",
+                        "userId": "<userId>",
+                        "accountId": "<accountId>",
+                        "folder": "<folderPath>",
+                        "type": "file",
+                        "status": "FAILED",
+                        "createdAt": "2025-07-25T11:45:14.740Z",
+                        "updatedAt": "2025-07-25T12:07:54.792Z",
+                        "account": {
+                          "name": "Example Organization"
+                        }
+                      },
+                      {
+                        "fileName": "https://petstore.swagger.io/",
+                        "id": "<documentId2>",
+                        "userId": "<userId>",
+                        "accountId": "<accountId>",
+                        "folder": null,
+                        "type": "url",
+                        "status": "FAILED",
+                        "createdAt": "2025-07-25T11:51:24.237Z",
+                        "updatedAt": "2025-07-25T11:51:32.447Z",
+                        "account": {
+                          "name": "Example Organization"
+                        }
+                      }
+                    ]
+                  },
+                  "timestamp": "2025-07-25T12:10:35.617Z"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Document"]
+      }
+    },
+    "/conversations": {
+      "post": {
+        "operationId": "ConversationsController_addConversation",
+        "summary": "Add a new conversation entry",
+        "description": "Creates a new conversation record associated with a session. This is typically used to store user or agent messages along with metadata like feedback, source, and debugging steps.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConversationDto"
+              },
+              "example": {
+                "sessionId": "7ed39b16-a3be-4bcd-847d-838bc79316ae",
+                "payload": {
+                  "content": "Hello, how can I help you?",
+                  "type": "text"
+                },
+                "source": "web",
+                "isDeleted": false,
+                "debugSteps": ["Received input", "Generated response"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Conversation created successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "id": "911b18f3-db08-4afc-bd54-2c14c180ea64",
+                    "sessionId": "7ed39b16-a3be-4bcd-847d-838bc79316ae",
+                    "content": "Hi",
+                    "isDeleted": false,
+                    "createdAt": "2025-07-25T09:13:00.416Z",
+                    "updatedAt": "2025-07-25T09:13:00.416Z",
+                    "feedback": null,
+                    "source": "agent_response",
+                    "feedbackMessage": null,
+                    "feedbackType": null,
+                    "videoReferences": null,
+                    "debugSteps": []
+                  },
+                  "timestamp": "2025-07-25T09:13:00.430Z"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while creating the conversation.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "INTERNAL_SERVER_ERROR",
+                  "errorCode": "UNKNOWN_ERROR",
+                  "timestamp": "2025-07-25T09:41:42.096Z",
+                  "path": "/agent-backend/conversations"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Conversations"]
+      },
+      "get": {
+        "operationId": "ConversationsController_getConversation",
+        "summary": "Fetch all conversations",
+        "description": "Retrieves a list of all conversations stored in the system. This includes both user and agent responses, their session context, timestamps, source, feedback metadata, and debug information.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all conversation records fetched successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": [
+                    {
+                      "id": "93d82d3d-79fc-45bf-b237-187269f738d2",
+                      "sessionId": "11afe6d2-9d7f-4967-befd-a966c0f738b2",
+                      "content": "how can you help me",
+                      "isDeleted": false,
+                      "createdAt": "2025-07-24T13:14:14.923Z",
+                      "updatedAt": "2025-07-24T13:14:14.923Z",
+                      "feedback": null,
+                      "source": "user",
+                      "feedbackMessage": null,
+                      "feedbackType": null,
+                      "videoReferences": null,
+                      "debugSteps": []
+                    },
+                    {
+                      "id": "10bf42d0-ee5b-4edf-8654-920b1af450bf",
+                      "sessionId": "11afe6d2-9d7f-4967-befd-a966c0f738b2",
+                      "content": "I can help you by providing a checklist of items to consider when evaluating a health insurance plan...",
+                      "isDeleted": false,
+                      "createdAt": "2025-07-24T13:15:03.261Z",
+                      "updatedAt": "2025-07-24T13:15:03.261Z",
+                      "feedback": null,
+                      "source": "agent_response",
+                      "feedbackMessage": null,
+                      "feedbackType": null,
+                      "videoReferences": null,
+                      "debugSteps": [
+                        "Agent is processing the query...",
+                        "Searching knowledge base...",
+                        "Synthesizing answer...",
+                        "Took 48.69 seconds to process and respond"
+                      ]
+                    }
+                  ],
+                  "timestamp": "2025-07-25T10:34:53.408Z"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Conversations"]
+      },
+      "put": {
+        "operationId": "ConversationsController_updateFeedbackInConversation",
+        "summary": "Update feedback for a conversation",
+        "description": "Updates feedback-related fields such as `feedbackMessage` and `feedbackType` for a given conversation. Useful for tracking user satisfaction with responses.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateConversationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Feedback updated successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "id": "10bf42d0-ee5b-4edf-8654-920b1af450bf",
+                    "sessionId": "11afe6d2-9d7f-4967-befd-a966c0f738b2",
+                    "content": "I can help you by providing a checklist of items to consider when evaluating a health insurance plan...",
+                    "isDeleted": false,
+                    "createdAt": "2025-07-24T13:15:03.261Z",
+                    "updatedAt": "2025-07-25T11:23:38.330Z",
+                    "feedback": null,
+                    "source": "agent_response",
+                    "feedbackMessage": "Didn't explain much.",
+                    "feedbackType": "negative",
+                    "videoReferences": null,
+                    "debugSteps": [
+                      "Agent is processing the query...",
+                      "Searching knowledge base...",
+                      "Synthesizing answer...",
+                      "Took 48.69 seconds to process and respond"
+                    ]
+                  },
+                  "timestamp": "2025-07-25T11:23:38.354Z"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while updating the conversation feedback.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "INTERNAL_SERVER_ERROR",
+                  "errorCode": "UNKNOWN_ERROR",
+                  "timestamp": "2025-07-25T11:25:08.565Z",
+                  "path": "/agent-backend/conversations"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Conversations"]
+      }
+    },
+    "/sessions": {
+      "post": {
+        "operationId": "SessionsController_createSession",
+        "summary": "Create a new session",
+        "description": "Creates a new session for a user. A session is used to track and group related conversations or interactions.",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Session created successfully.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "id": "f1a42261-f94b-467d-ae61-234c5ddf3e84",
+                    "userId": "4b1aaf89-3b21-4a79-bdb3-74bf5cb23a8a",
+                    "title": "New session",
+                    "isDeleted": false,
+                    "createdAt": "2025-07-25T11:35:18.182Z",
+                    "updatedAt": "2025-07-25T11:35:18.182Z"
+                  },
+                  "timestamp": "2025-07-25T11:35:18.194Z"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error while creating the session.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "FAILURE",
+                  "message": "INTERNAL_SERVER_ERROR",
+                  "errorCode": "UNKNOWN_ERROR",
+                  "timestamp": "2025-07-25T11:36:18.565Z",
+                  "path": "/agent-backend/sessions"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Sessions"]
+      },
+      "get": {
+        "operationId": "SessionsController_getSession",
+        "summary": "Retrieve a list of sessions",
+        "description": "Fetches all sessions associated with users including conversation history and feedback, sorted by creation time.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful retrieval of sessions and their related conversation and feedback data.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "status": "SUCCESS",
+                  "data": {
+                    "numberOfRows": 2,
+                    "rows": [
+                      {
+                        "id": "7ed39b16-a3be-4bcd-847d-838bc79316ae",
+                        "userId": "4b1aaf89-3b21-4a79-bdb3-74bf5cb23a8a",
+                        "title": "Initial query",
+                        "isDeleted": false,
+                        "createdAt": "2025-07-25T09:08:03.947Z",
+                        "updatedAt": "2025-07-25T09:08:03.947Z",
+                        "conversations": [
+                          {
+                            "content": "Hi",
+                            "feedbackType": null,
+                            "feedbackMessage": null,
+                            "session": {
+                              "user": {
+                                "name": "Jane Doe"
+                              }
+                            }
+                          }
+                        ],
+                        "username": "Jane Doe",
+                        "feedback": {
+                          "positive": "",
+                          "negative": ""
+                        }
+                      },
+                      {
+                        "id": "11afe6d2-9d7f-4967-befd-a966c0f738b2",
+                        "userId": "4b1aaf89-3b21-4a79-bdb3-74bf5cb23a8a",
+                        "title": "Health insurance assistance",
+                        "isDeleted": false,
+                        "createdAt": "2025-07-24T13:14:14.415Z",
+                        "updatedAt": "2025-07-24T13:17:31.692Z",
+                        "conversations": [
+                          {
+                            "content": "how can you help me",
+                            "feedbackType": null,
+                            "feedbackMessage": null,
+                            "session": {
+                              "user": {
+                                "name": "Jane Doe"
+                              }
+                            }
+                          },
+                          {
+                            "content": "I can help you by providing a checklist of items to consider...",
+                            "feedbackType": "negative",
+                            "feedbackMessage": "Didn't explain much.",
+                            "session": {
+                              "user": {
+                                "name": "Jane Doe"
+                              }
+                            }
+                          }
+                        ],
+                        "username": "Jane Doe",
+                        "feedback": {
+                          "positive": "",
+                          "negative": "negative"
+                        }
+                      }
+                    ]
+                  },
+                  "timestamp": "2025-07-25T11:38:19.804Z"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["Sessions"]
+      }
+    }
+  },
+  "info": {
+    "title": "Agent Backend Service",
+    "description": "✨The Agent Backend Service is a scalable, modular backend system designed to power intelligent agent-based applications. It provides robust APIs for authentication, user management, document processing, conversation tracking, training resources, and more. Built with flexibility in mind, it integrates seamlessly with external services while ensuring security, extensibility, and high availability.\n\n# 🔐 Authentication\n\nThis API uses a secure cookie named `token` to authenticate requests.\n\n- You must log in to receive this cookie.\n- When using **Try It Out** in the docs, **you must manually set the `token` cookie** in your browser.\n- You can find it in dev tools → Application → Cookies → {current url} -> `token`.\n\n**Note**: Scalar does not automatically send cookies during \"Try it out\".\n",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "name": "prod",
+      "url": "https://zeno.sarvaha.ai/agent-backend"
+    },
+    {
+      "name": "dev",
+      "url": "http://localhost:7082/agent-backend"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com",
+            "description": "User's email address used for login."
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "yourStrongPassword123",
+            "description": "User's password used for login."
+          }
+        }
+      },
+      "InviteDto": {
+        "type": "object",
+        "properties": {
+          "bulk": {
+            "type": "boolean",
+            "example": false,
+            "description": "Indicates if the invite operation is for bulk users."
+          },
+          "userDetails": {
+            "$ref": "#/components/schemas/SignupDto"
+          }
+        }
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "987f6543-e21a-45bc-94d1-112233445566"
+          },
+          "name": {
+            "type": "string",
+            "example": "John Doe"
+          },
+          "nextLoginDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-08-01T10:00:00Z"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 5,
+            "example": "yourStrongPassword123"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "example": false
+          },
+          "isEmailVerified": {
+            "type": "boolean",
+            "example": true
+          },
+          "roleId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        }
+      },
+      "AddOrUpdateAccountDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "987f6543-e21a-45bc-94d1-112233445566"
+          },
+          "name": {
+            "type": "string",
+            "example": "Acme Inc."
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "TrainingInputDto": {
+        "type": "object",
+        "required": ["isMedia"],
+        "properties": {
+          "urls": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "example": [
+              "https://example.com/doc1.pdf",
+              "https://example.com/doc2.pdf"
+            ]
+          },
+          "isMedia": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "EventDto": {
+        "type": "object",
+        "required": ["userId", "accountId", "timestamp"],
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "987f6543-e21a-45bc-94d1-112233445566"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-08-01T10:00:00Z"
+          },
+          "data": {
+            "type": "object",
+            "nullable": true,
+            "example": {}
+          }
+        }
+      },
+      "UpdateDocumentDto": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "example": "document.pdf"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["completed", "failed", "new", "uploaded", "in progress"],
+            "example": "completed"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "ConversationPayloadDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "example": "What is shown in the video?"
+          },
+          "videoReferences": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VideoReferenceDto"
+            },
+            "nullable": true
+          }
+        },
+        "required": ["content"]
+      },
+      "VideoReferenceDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "https://example.com/video.mp4"
+          },
+          "title": {
+            "type": "string",
+            "example": "Intro Video"
+          },
+          "timeRange": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 2,
+            "example": [0, 120]
+          },
+          "youtubeId": {
+            "type": "string",
+            "example": "dQw4w9WgXcQ"
+          }
+        },
+        "required": ["url", "title", "timeRange"]
+      },
+      "ConversationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "sessionId": {
+            "type": "string",
+            "example": "abcd-session-1234"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/ConversationPayloadDto"
+          },
+          "source": {
+            "type": "string",
+            "example": "web"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "example": false
+          },
+          "debugSteps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["step1", "step2"]
+          }
+        },
+        "required": ["sessionId", "payload", "source"]
+      },
+      "UpdateConversationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "22222222-2222-2222-2222-222222222222"
+          },
+          "feedbackType": {
+            "type": "string",
+            "example": "positive"
+          },
+          "feedbackMessage": {
+            "type": "string",
+            "example": "Great response!"
+          }
+        },
+        "required": ["id"]
+      },
+      "SessionDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "session-uuid-1234"
+          },
+          "userId": {
+            "type": "string",
+            "example": "user-uuid-5678"
+          },
+          "title": {
+            "type": "string",
+            "example": "Learning Physics"
+          }
+        },
+        "required": ["userId", "title"]
+      },
+      "SessionQueryDto": {
+        "type": "object",
+        "properties": {
+          "limit": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 10
+          },
+          "skip": {
+            "type": "integer",
+            "minimum": 0,
+            "example": 0
+          },
+          "orderBy": {
+            "type": "string",
+            "enum": ["asc", "desc"],
+            "example": "desc"
+          },
+          "filters": {
+            "type": "object",
+            "properties": {
+              "username": {
+                "type": "string",
+                "example": "john_doe"
+              },
+              "date": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-07-20T00:00:00Z"
+                  },
+                  "to": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-07-25T23:59:59Z"
+                  }
+                }
+              },
+              "feedback": {
+                "type": "string",
+                "enum": ["positive", "negative"],
+                "example": "positive"
+              }
+            }
+          }
+        }
+      },
+      "AddDocumentDto": {
+        "type": "object",
+        "required": ["fileName", "type"],
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "example": "document.pdf"
+          },
+          "type": {
+            "type": "string",
+            "example": "pdf"
+          },
+          "folder": {
+            "type": "string",
+            "example": "invoices"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "example": "https://example.com/document.pdf"
+          },
+          "bucket": {
+            "type": "string",
+            "example": "my-s3-bucket"
+          },
+          "awsRegion": {
+            "type": "string",
+            "example": "us-east-1"
+          },
+          "status": {
+            "type": "string",
+            "example": "uploaded"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "example": false
+          }
+        }
+      },
+      "SignupDto": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "example": "user@example.com",
+            "description": "User's email address"
+          },
+          "name": {
+            "type": "string",
+            "example": "Jane Doe",
+            "description": "Full name of the user"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["admin", "superadmin", "guest", "user"],
+            "example": "admin",
+            "description": "User role (e.g., admin, user, guest)"
+          },
+          "accountName": {
+            "type": "string",
+            "example": "Acme Corp",
+            "description": "Name of the associated account or organization"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "minLength": 5,
+            "example": "StrongPass123!",
+            "description": "User's password (min. 5 characters)"
+          }
+        }
+      }
+    }
+  }
+}
+

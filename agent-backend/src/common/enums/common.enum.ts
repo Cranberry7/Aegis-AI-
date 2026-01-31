@@ -1,0 +1,65 @@
+export enum ConfigVariables {
+  BACKEND_PORT = 'BACKEND_PORT',
+  ENVIRONMENT = 'ENVIRONMENT',
+  SERVICE_NAME = 'SERVICE_NAME',
+  USER_LOGIN_EXPIRY = 'USER_LOGIN_EXPIRY',
+  USER_LOGIN_EXPIRY_UNIT = 'USER_LOGIN_EXPIRY_UNIT',
+  EMAIL_HOST = 'EMAIL_HOST',
+  EMAIL_USER = 'EMAIL_USER',
+  EMAIL_PASS = 'EMAIL_PASS',
+  JWT_SECRET = 'JWT_SECRET',
+  JWT_EXPIRY = 'JWT_EXPIRY',
+  FRONTEND_BASE_URL = 'FRONTEND_BASE_URL',
+  AWS_REGION = 'AWS_REGION',
+  AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID',
+  AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY',
+  AWS_S3_BUCKET = 'AWS_S3_BUCKET',
+  AWS_CLOUDWATCH_LOGGER_GROUP = 'AWS_CLOUDWATCH_LOGGER_GROUP',
+  AGENT_CORE_URL = 'AGENT_CORE_URL',
+  RETRY = 'RETRY',
+  TIMEOUT = 'TIMEOUT',
+  TRAINING_MATERIAL_FILE_MAX_ALLOWED_SIZE = 'TRAINING_MATERIAL_FILE_MAX_ALLOWED_SIZE',
+  TRAINING_MATERIAL_ALLOWED_FILE_NUMBER = 'TRAINING_MATERIAL_ALLOWED_FILE_NUMBER',
+  INVITE_USERS_FILE_MAX_ALLOWED_SIZE = 'INVITE_USERS_FILE_MAX_ALLOWED_SIZE',
+  RABBIT_MQ_URL = 'RABBIT_MQ_URL',
+}
+
+export enum Environments {
+  DEV = 'DEV',
+  PROD = 'PROD',
+}
+
+export enum RequestProtocols {
+  HTTP = 'http',
+  HTTPS = 'https',
+}
+
+export enum DateUnits {
+  MONTHS = 'months',
+  YEARS = 'years',
+  DAYS = 'days',
+  HOURS = 'hours',
+  MINUTES = 'minutes',
+  SECONDS = 'seconds',
+}
+
+export enum RequestStatus {
+  SUCCESS = 'SUCCESS',
+  FAILURE = 'FAILURE',
+}
+
+export enum FeedbackType {
+  POSITIVE = 'positive',
+  NEGATIVE = 'negative',
+}
+
+export enum Scope {
+  USER = 'user',
+  INTERNAL = 'internal',
+}
+
+export enum Services {
+  AGENT_BACKEND = 'agent-backend',
+  AGENT_CORE = 'agent-core',
+  AGENT_FRONTEND = 'agent-frontend',
+}

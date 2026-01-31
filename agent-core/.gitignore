@@ -1,0 +1,114 @@
+# Virtual environment
+agent-core/
+*.venv/
+venv/
+
+# Byte-compiled and cached Python files
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
+*$py.class
+
+# Logs and runtime files
+*.log
+*.pid
+*.out
+*.err
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Environment variables and configuration
+.env
+*.env
+
+
+# IDE files
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Testing and coverage
+.coverage
+*.cover
+coverage.xml
+.coverage.*
+.cache
+pytest_cache/
+nosetests.xml
+
+# Build and distribution
+build/
+dist/
+tmp/
+*.egg-info/
+.eggs/
+MANIFEST
+
+# Pip dependency files
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Compiled Cython files
+*.so
+
+# Docker files
+*.dockerfile
+docker-compose.override.yml
+
+# Temporary files
+*.swp
+*.tmp
+*.bak
+*.backup
+*.orig
+*.rej
+
+# Python wheels
+*.whl
+
+# Security
+*.key
+*.pem
+
+vectordb
+
+# Local dev test folder
+dev/
+models/
+openapi.json
+.qodo
+chat.py
+test.py
+.cursor
+.taskmaster
+
+# Logs
+logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dev-debug.log
+# Dependency directories
+node_modules/
+# Environment variables
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+
+# Task files
+# tasks.json
+# tasks/

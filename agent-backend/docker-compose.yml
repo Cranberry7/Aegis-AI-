@@ -1,0 +1,68 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      - "--api.insecure=true"                # Enable dashboard at :8080
+      - "--providers.docker=true"            # Enable Docker as provider
+      - "--entrypoints.web.address=:80"      # Define 'web' entrypoint
+      - "--providers.docker.network=ai_agents_nw"
+      - "--providers.docker.exposedByDefault=false"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ai_agents_nw
+
+  postgres:
+    container_name: ai-agents-postgres
+    image: postgres:latest
+    ports:
+      - '5433:5432'
+    env_file:
+      - ./.docker.env
+    networks:
+      - ai_agents_nw
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: ai-agents-rabbitmq
+    env_file:
+      - ./.docker.env
+    ports:
+      - '5673:5672'
+      - '15673:15672'
+    networks:
+      - ai_agents_nw
+
+  backend:
+    container_name: ai-agents-backend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    env_file:
+      - ./.env
+    networks:
+      - ai_agents_nw
+    depends_on:
+      - postgres
+      - rabbitmq
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(/agent-backend)"  # adjust path if needed
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=7082"
+    command: >
+      sh -c "
+        sleep 3 &&
+        npm run prisma:generate &&
+        npm run prisma:deploy &&
+        npm run build &&
+        npm run start:prod"
+
+networks:
+  ai_agents_nw:
+    external: true
+  

@@ -1,0 +1,10 @@
+export const CLIENT_PROXY_NAMES = {
+  DELETE_KNOWLEDGE_CLIENT: 'RABBITMQ_SERVICE_DELETE_KNOWLEDGE',
+  NEW_KNOWLEDGE_CLIENT: 'RABBITMQ_SERVICE_NEW_KNOWLEDGE',
+};
+
+export const QUEUES = {
+  COMPLETE_TRAINING: 'complete_training',
+  NEW_KNOWLEDGE: 'new_knowledge',
+  DELETE_KNOWLEDGE: 'delete_knowledge',
+};

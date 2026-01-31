@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id        String     @id @unique @default(uuid())
+  name      String
+  isDeleted Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime?  @updatedAt
+  documents Document[] @relation("AccountDocuments")
+  users     User[]     @relation("Account")
+}
+
+model Roles {
+  id        String    @id @unique @default(uuid())
+  code      String    @unique
+  value     String
+  isDeleted Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  users     User[]    @relation("UserRole")
+}
+
+model Document {
+  id        String    @id @unique @default(uuid())
+  fileName  String
+  accountId String
+  userId    String
+  type      String
+  status    String?
+  folder    String?
+  url       String?
+  bucket    String?
+  awsRegion String?
+  isDeleted Boolean   @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  account   Account   @relation("AccountDocuments", fields: [accountId], references: [id])
+  user      User      @relation("UserDocuments", fields: [userId], references: [id])
+}
+
+model User {
+  id              String     @id @unique @default(uuid())
+  name            String?
+  email           String     @unique
+  password        String?
+  accountId       String
+  nextLoginDate   DateTime?
+  isEmailVerified Boolean    @default(false)
+  isDeleted       Boolean    @default(false)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime?  @updatedAt
+  roleId          String     @default("f20e84f5-5fb7-48e8-a59f-c1a577020c09")
+  documents       Document[] @relation("UserDocuments")
+  sessions        Session[]  @relation("Sessions")
+  account         Account    @relation("Account", fields: [accountId], references: [id])
+  role            Roles      @relation("UserRole", fields: [roleId], references: [id])
+}
+
+model Session {
+  id            String         @id @unique @default(uuid())
+  userId        String
+  title         String
+  isDeleted     Boolean        @default(false)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime?      @updatedAt
+  conversations Conversation[] @relation("Conversations")
+  user          User           @relation("Sessions", fields: [userId], references: [id])
+}
+
+model Conversation {
+  id              String    @id @unique @default(uuid())
+  sessionId       String
+  content         String
+  isDeleted       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime? @updatedAt
+  feedback        String?
+  source          String    @default("")
+  feedbackMessage String?
+  feedbackType    String?
+  videoReferences String?
+  debugSteps      String[]
+  sourceIds       String[]  @default([])
+  session         Session   @relation("Conversations", fields: [sessionId], references: [id])
+}
+
+model Event {
+  id            String   @id @default(uuid()) @db.Uuid
+  eventSourceId String   @db.Uuid
+  eventTypeId   String   @db.Uuid
+  reference     Json?
+  isDeleted     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  action        String
+}
