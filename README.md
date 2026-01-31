@@ -1,7 +1,8 @@
-# 🤖 Sarvaha AI - Intelligent Customer Support Platform
+<h1 align="center">Aegis AI</h1>
+<p align="center">Enterprise AI Knowledge Platform</p>
 
 <div align="center">
-
+  
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-22.13-green.svg)
 ![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
@@ -39,7 +40,7 @@
 
 ## 🌟 Overview
 
-**Sarvaha AI** is a production-ready, microservices-based intelligent customer support platform that automates query resolution using advanced AI techniques. The system combines **Retrieval-Augmented Generation (RAG)**, **multi-agent orchestration**, and **real-time streaming** to provide context-aware, accurate responses to customer queries.
+**Aegis AI** is a production-ready, microservices-based intelligent customer support platform that automates query resolution using advanced AI techniques. The system combines **Retrieval-Augmented Generation (RAG)**, **multi-agent orchestration**, and **real-time streaming** to provide context-aware, accurate responses to customer queries.
 
 ### Key Highlights
 
@@ -56,7 +57,7 @@
 
 ### 🤖 AI & Intelligence
 
-- **Multi-Agent Orchestration** using Agno framework
+- **Multi-Agent Orchestration** using **Agno** framework
   - Query expansion agent for better search results
   - Video search agent for multimedia content
   - Descriptor agent for content analysis
@@ -688,50 +689,11 @@ docker-compose -f docker-compose.prod.yml up -d --scale core=3
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Style
-
-- **Backend**: Follow NestJS conventions, use ESLint + Prettier
-- **Core**: Follow PEP 8, use Ruff for linting
-- **Frontend**: Follow React best practices, use ESLint + Prettier
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
-
-## 🙏 Acknowledgments
-
-- [NestJS](https://nestjs.com/) - Progressive Node.js framework
-- [FastAPI](https://fastapi.tiangolo.com/) - Modern Python web framework
-- [Agno](https://github.com/agno-agi/agno) - Agentic AI framework
-- [Milvus](https://milvus.io/) - Vector database
-- [Prisma](https://www.prisma.io/) - Next-generation ORM
-- [Radix UI](https://www.radix-ui.com/) - Unstyled UI components
-
----
-
-## 📧 Contact
-
-For questions or support, please open an issue or contact [your-email@example.com](mailto:your-email@example.com)
-
----
-
-<div align="center">
-
-**Built with ❤️ using NestJS, FastAPI, and React**
 
 ⭐ Star this repo if you find it helpful!
 
