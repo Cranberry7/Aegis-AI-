@@ -2,6 +2,7 @@
 <p align="center">Enterprise AI Knowledge Platform</p>
 
 <div align="center">
+  
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Node](https://img.shields.io/badge/node-22.13-green.svg)
 ![Python](https://img.shields.io/badge/python-3.12+-blue.svg)
