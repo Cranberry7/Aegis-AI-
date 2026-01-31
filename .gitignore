@@ -80,3 +80,5 @@ models/*.pt
 *.tmp
 *.temp
 .cache/
+*.code-workspace
+
